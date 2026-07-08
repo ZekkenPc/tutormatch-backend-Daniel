@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autorizar Acceso - TutorMatch</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --white: #ffffff;
+        --border: #e2e8f0;
+        --shadow-md:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        --shadow-lg:
+          0 10px 25px -5px rgba(0, 0, 0, 0.08),
+          0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          160deg,
+          rgba(37, 99, 235, 0.03) 0%,
+          rgba(245, 158, 11, 0.03) 100%
+        );
+        background-color: var(--bg-light);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 24px;
+        color: var(--text-dark);
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: -10%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(37, 99, 235, 0.04) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      .consent-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 40px 36px 32px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 460px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(226, 232, 240, 0.7);
+        animation: cardFadeIn 0.5s ease-out;
+      }
+
+      @keyframes cardFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+
+      .logo svg {
+        flex-shrink: 0;
+      }
+
+      .shield-icon {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        opacity: 0.7;
+      }
+
+      .title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--text-dark);
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+
+      .client-app {
+        background: var(--bg-light);
+        border-radius: 10px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .app-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          rgba(37, 99, 235, 0.15),
+          rgba(37, 99, 235, 0.05)
+        );
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .app-info {
+        font-size: 0.9rem;
+      }
+
+      .app-name {
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .app-id {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .scope-list {
+        text-align: left;
+        background: var(--bg-light);
+        padding: 18px 20px;
+        border-radius: 12px;
+        margin-bottom: 28px;
+        border: 1px solid var(--border);
+      }
+
+      .scope-list-title {
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+      }
+
+      .scope-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .scope-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .scope-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--primary-color);
+        margin-top: 2px;
+        flex-shrink: 0;
+        pointer-events: none;
+      }
+
+      .scope-content {
+        flex: 1;
+      }
+
+      .scope-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: block;
+        color: var(--text-dark);
+      }
+
+      .scope-desc {
+        font-size: 0.825rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 14px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s;
+        border: none;
+        text-align: center;
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--white);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      .btn-cancel {
+        background-color: #f1f5f9;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+      }
+
+      .btn-cancel:hover {
+        background-color: #e2e8f0;
+      }
+
+      .footer-text {
+        margin-top: 24px;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .footer-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .consent-card {
+          padding: 28px 20px 24px;
+          border-radius: 16px;
+        }
+        .btn-group {
+          flex-direction: column-reverse;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="consent-card">
+      <!-- Logo -->
+      <div class="logo">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5" />
+        </svg>
+        TutorMatch
+      </div>
+
+      <h2 class="title">Autorización de Acceso</h2>
+      <p class="subtitle">
+        La aplicación <strong>TutorMatch</strong> solicita acceso a tu
+        cuenta.
+      </p>
+
+      <!-- Información del cliente -->
+      <div class="client-app">
+        <div class="app-avatar">
+          <span>TM</span>
+        </div>
+        <div class="app-info">
+          <div class="app-name">TutorMatch</div>
+          <div class="app-id">ID: <span th:text="${clientId}"></span></div>
+        </div>
+      </div>
+
+      <form th:action="@{/oauth2/authorize}" method="post">
+        <input type="hidden" name="client_id" th:value="${clientId}" />
+        <input type="hidden" name="state" th:value="${state}" />
+
+        <div class="scope-list">
+          <div class="scope-list-title">Permisos solicitados</div>
+
+          <div class="scope-item" th:each="scope : ${scopes}">
+            <input
+              type="checkbox"
+              name="scope"
+              th:value="${scope}"
+              th:id="${scope}"
+              class="scope-checkbox"
+              checked
+              readonly
+              onclick="return false;"
+            />
+            <div class="scope-content">
+              <label
+                class="scope-label"
+                th:for="${scope}"
+                th:text="${scope}"
+              ></label>
+              <span class="scope-desc" th:if="${scope == 'openid'}"
+                >Verificar tu identidad</span
+              >
+              <span class="scope-desc" th:if="${scope == 'profile'}"
+                >Acceder a tu rol y datos de perfil</span
+              >
+              <span
+                class="scope-desc"
+                th:if="${scope != 'openid' and scope != 'profile'}"
+                >Permiso solicitado por la aplicación</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            onclick="window.history.back()"
+          >
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" id="submit-consent">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Permitir Acceso
+          </button>
+        </div>
+      </form>
+
+      <p class="footer-text">
+        Al autorizar, aceptas compartir estos datos con la aplicación.
+      </p>
+    </div>
+  </body>
+</html>

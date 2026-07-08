@@ -33,6 +33,9 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -56,7 +59,9 @@ public class SecurityConfig {
                     http.securityMatcher(authorizationServer.getEndpointsMatcher());
                     // Habilita OpenID Connect (para que el Auth Server pueda manejar solicitudes de
                     // servidores externos)
-                    authorizationServer.oidc(Customizer.withDefaults());
+                    authorizationServer
+                            .authorizationEndpoint(authEndpoint -> authEndpoint.consentPage("/oauth2/consent"))
+                            .oidc(Customizer.withDefaults());
                 })
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .exceptionHandling((exceptions) -> exceptions
@@ -73,10 +78,12 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/.well-known/**", "/favicon.ico", "/error").permitAll()
+                        .requestMatchers("/.well-known/**", "/favicon.ico", "/error", "/login", "/css/**").permitAll()
                         .anyRequest().authenticated())
                 // Habilita el formulario de inicio de sesión por defecto de Spring Security
-                .formLogin(Customizer.withDefaults());
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .permitAll());
         return http.build();
     }
 
@@ -93,7 +100,7 @@ public class SecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 // Redirección hacia tu frontend en Angular (ajustaremos este puerto después si
                 // es necesario)
-                .redirectUri("http://localhost:4200/authorized") // Redirección tras login
+                .redirectUri("http://localhost:4200/app/home") // Redirección tras login
                 .postLogoutRedirectUri("http://localhost:4200/") // Redirección tras logout
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)

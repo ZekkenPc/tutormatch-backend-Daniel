@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - TutorMatch</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --white: #ffffff;
+        --error: #ef4444;
+        --success: #22c55e;
+        --border: #e2e8f0;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        --shadow-lg:
+          0 10px 25px -5px rgba(0, 0, 0, 0.08),
+          0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          160deg,
+          rgba(37, 99, 235, 0.04) 0%,
+          rgba(245, 158, 11, 0.04) 100%
+        );
+        background-color: var(--bg-light);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 24px;
+        color: var(--text-dark);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Decoración de fondo sutil */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -15%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(37, 99, 235, 0.06) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -10%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 158, 11, 0.05) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      .login-card {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 44px 36px 36px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        animation: cardFadeIn 0.5s ease-out;
+      }
+
+      @keyframes cardFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+
+      .logo svg {
+        flex-shrink: 0;
+      }
+
+      .title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--text-dark);
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 28px;
+      }
+
+      /* Alertas */
+      .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 16px;
+        font-size: 0.875rem;
+        border-radius: 10px;
+        margin-bottom: 24px;
+        text-align: left;
+        line-height: 1.4;
+      }
+
+      .alert-error {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+      }
+
+      .alert-success {
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+      }
+
+      .alert-icon {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        margin-top: 1px;
+      }
+
+      /* Formulario */
+      .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-dark);
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .input-wrapper .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: #94a3b8;
+        pointer-events: none;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px 14px 12px 42px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s;
+        background-color: #fcfcfd;
+        color: var(--text-dark);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        background-color: #fff;
+      }
+
+      .form-group input::placeholder {
+        color: #9ca3af;
+      }
+
+      .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        font-size: 0.85rem;
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .remember-me input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary-color);
+      }
+
+      .forgot-password {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .forgot-password:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      .btn-primary {
+        width: 100%;
+        padding: 13px;
+        background-color: var(--primary-color);
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition:
+          background-color 0.25s,
+          transform 0.15s,
+          box-shadow 0.25s;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        letter-spacing: 0.01em;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .footer-text {
+        margin-top: 28px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .footer-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .login-card {
+          padding: 32px 24px 28px;
+          border-radius: 16px;
+        }
+        .form-options {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+      }
+
+      /* Botón de ojo para contraseña */
+      .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        z-index: 2;
+        transition: color 0.2s;
+      }
+
+      .toggle-password:hover {
+        color: var(--primary-color);
+      }
+
+      .toggle-password svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .eye-closed {
+        display: none;
+      }
+
+      /* Ajustar padding del input para que no se solape con el ojo */
+      input[type="password"],
+      input[type="text"] {
+        padding-right: 44px !important; /* Sobrescribe el padding general si hace falta */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <!-- Logo con SVG -->
+      <div class="logo">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5" />
+        </svg>
+        TutorMatch
+      </div>
+      <h2 class="title">Te damos la bienvenida</h2>
+      <p class="subtitle">Ingresa con tu correo</p>
+
+      <!-- Mensaje de Error -->
+      <div th:if="${param.error}" class="alert alert-error">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span
+          >Correo o contraseña incorrectos. Intenta de
+          nuevo.</span
+        >
+      </div>
+
+      <!-- Mensaje de cierre de sesión exitoso -->
+      <div th:if="${param.logout}" class="alert alert-success">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>Has cerrado sesión exitosamente. ¡Hasta pronto!</span>
+      </div>
+
+      <form th:action="@{/login}" method="post">
+        <div class="form-group">
+          <label for="username">Correo institucional</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+              />
+              <path
+                d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+              />
+            </svg>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="ejemplo@uteq.edu.mx"
+              required
+              autofocus
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <!-- Icono del candado (existente) -->
+            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
+            <!-- Botón de mostrar/ocultar -->
+            <button
+              type="button"
+              class="toggle-password"
+              aria-label="Mostrar contraseña"
+            >
+              <!-- Ojo abierto (visible por defecto) -->
+              <svg class="eye-open" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <!-- Ojo tachado (oculto por defecto) -->
+              <svg class="eye-closed" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                  clip-rule="evenodd"
+                />
+                <path
+                  d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <p class="footer-text">
+        © 2026 TutorMatch · <a href="#">Nova Solutions</a>
+      </p>
+    </div>
+
+    <script>
+      (function () {
+        const toggleBtn = document.querySelector(".toggle-password");
+        if (!toggleBtn) return;
+
+        const passwordInput = document.getElementById("password");
+        const eyeOpen = toggleBtn.querySelector(".eye-open");
+        const eyeClosed = toggleBtn.querySelector(".eye-closed");
+
+        toggleBtn.addEventListener("click", function () {
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeOpen.style.display = "none";
+            eyeClosed.style.display = "block";
+            toggleBtn.setAttribute("aria-label", "Ocultar contraseña");
+          } else {
+            passwordInput.type = "password";
+            eyeOpen.style.display = "block";
+            eyeClosed.style.display = "none";
+            toggleBtn.setAttribute("aria-label", "Mostrar contraseña");
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

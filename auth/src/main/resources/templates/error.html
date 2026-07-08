@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error - TutorMatch</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --white: #ffffff;
+        --error-color: #ef4444;
+        --error-bg: #fef2f2;
+        --border: #e2e8f0;
+        --shadow-lg:
+          0 10px 25px -5px rgba(0, 0, 0, 0.08),
+          0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          160deg,
+          rgba(239, 68, 68, 0.03) 0%,
+          rgba(37, 99, 235, 0.03) 100%
+        );
+        background-color: var(--bg-light);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 24px;
+        color: var(--text-dark);
+        position: relative;
+      }
+
+      /* Fondo decorativo */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -10%;
+        right: -5%;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(
+          circle,
+          rgba(239, 68, 68, 0.05) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -10%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(37, 99, 235, 0.04) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      .error-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 40px 36px 32px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 460px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(226, 232, 240, 0.7);
+        animation: cardFadeIn 0.5s ease-out;
+      }
+
+      @keyframes cardFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Logo */
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+
+      .logo svg {
+        flex-shrink: 0;
+      }
+
+      /* Icono de error */
+      .error-icon {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+      }
+
+      .error-icon svg {
+        width: 56px;
+        height: 56px;
+        color: var(--error-color);
+        opacity: 0.9;
+      }
+
+      .title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text-dark);
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      /* Caja de detalles del error */
+      .error-details {
+        background-color: var(--error-bg);
+        border: 1px solid #fca5a5;
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 28px;
+        text-align: left;
+        font-size: 0.875rem;
+      }
+
+      .error-details p {
+        margin-bottom: 10px;
+        color: #991b1b;
+        word-wrap: break-word;
+      }
+
+      .error-details p:last-child {
+        margin-bottom: 0;
+      }
+
+      .error-details strong {
+        font-weight: 600;
+        color: #7f1d1d;
+      }
+
+      .error-label {
+        font-weight: 600;
+        color: #7f1d1d;
+      }
+
+      .error-value {
+        font-family: "Inter", monospace;
+        background: rgba(239, 68, 68, 0.1);
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+
+      /* Botón */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 13px;
+        background-color: var(--primary-color);
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 10px;
+        transition:
+          background-color 0.25s,
+          transform 0.15s,
+          box-shadow 0.25s;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        letter-spacing: 0.01em;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* Footer */
+      .footer-text {
+        margin-top: 24px;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .footer-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      @media (max-width: 480px) {
+        .error-card {
+          padding: 32px 24px 28px;
+          border-radius: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-card">
+      <!-- Logo SVG -->
+      <div class="logo">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5" />
+        </svg>
+        TutorMatch
+      </div>
+
+      <!-- Icono de advertencia/error -->
+      <div class="error-icon">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+
+      <h1 class="title">¡Oops! Algo salió mal</h1>
+      <p class="subtitle">
+        Ha ocurrido un problema inesperado al intentar procesar tu solicitud.
+      </p>
+
+      <!-- Detalles del error -->
+      <div class="error-details">
+        <p>
+          <span class="error-label">Código:</span>
+          <span th:text="${status}" class="error-value">500</span> -
+          <span th:text="${error}" class="error-value">Error</span>
+        </p>
+        <p>
+          <span class="error-label">Detalle:</span>
+          <span th:text="${message}">Descripción del error no disponible.</span>
+        </p>
+        <p th:if="${path}">
+          <span class="error-label">Ruta:</span>
+          <span th:text="${path}" class="error-value">/ruta</span>
+        </p>
+      </div>
+
+      <!-- Botón de regreso -->
+      <a th:href="@{/login}" class="btn-primary">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Volver al inicio de sesión
+      </a>
+
+      <p class="footer-text">
+        Si el problema persiste, contacta a <a href="#">soporte técnico</a>
+      </p>
+    </div>
+  </body>
+</html>
