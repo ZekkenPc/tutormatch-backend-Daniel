@@ -31,11 +31,36 @@ public class PreguntaController {
             @RequestBody PreguntaRequestDto dto,
             @AuthenticationPrincipal Jwt jwt) {
 
-        UUID alumnoId = UUID.fromString(jwt.getSubject());
+        UUID alumnoId = UUID.fromString(jwt.getClaimAsString("usuario_id"));
         String nombre = jwt.getClaimAsString("nombre");
 
         PreguntaResponseDto creada = preguntaService.crearPregunta(sesionId, alumnoId, nombre, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+    }
+
+    @PostMapping("/{sesionId}/preguntas/{preguntaId}/respuesta")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
+    public ResponseEntity<PreguntaResponseDto> responderPregunta(
+            @PathVariable UUID sesionId,
+            @PathVariable UUID preguntaId,
+            @RequestBody RespuestaRequestDto dto,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        UUID tutorId = UUID.fromString(jwt.getClaimAsString("usuario_id"));
+        PreguntaResponseDto actualizada = preguntaService.responderPregunta(sesionId, preguntaId, tutorId, dto);
+        return ResponseEntity.ok(actualizada);
+    }
+
+    @DeleteMapping("/{sesionId}/preguntas/{preguntaId}")
+    @PreAuthorize("hasRole('ROLE_ALUMNO')")
+    public ResponseEntity<Void> eliminarPregunta(
+            @PathVariable UUID sesionId,
+            @PathVariable UUID preguntaId,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        UUID alumnoId = UUID.fromString(jwt.getClaimAsString("usuario_id"));
+        preguntaService.eliminarPregunta(sesionId, preguntaId, alumnoId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{sesionId}/preguntas")

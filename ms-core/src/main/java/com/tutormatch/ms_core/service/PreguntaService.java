@@ -5,6 +5,7 @@ import com.tutormatch.ms_core.dto.PreguntaResponseDto;
 import com.tutormatch.ms_core.dto.RespuestaRequestDto;
 import com.tutormatch.ms_core.entity.Sesion;
 import com.tutormatch.ms_core.entity.SesionPregunta;
+import com.tutormatch.ms_core.repository.InscripcionRepository;
 import com.tutormatch.ms_core.repository.PreguntaRepository;
 import com.tutormatch.ms_core.repository.SesionRepository;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,17 @@ import java.util.stream.Collectors;
 @Service
 public class PreguntaService {
 
+    private static final String INSCRIPCION_CONFIRMADA = "CONFIRMADA";
+
     private final PreguntaRepository preguntaRepository;
     private final SesionRepository sesionRepository;
+    private final InscripcionRepository inscripcionRepository;
 
-    public PreguntaService(PreguntaRepository preguntaRepository, SesionRepository sesionRepository) {
+    public PreguntaService(PreguntaRepository preguntaRepository, SesionRepository sesionRepository,
+                           InscripcionRepository inscripcionRepository) {
         this.preguntaRepository = preguntaRepository;
         this.sesionRepository = sesionRepository;
+        this.inscripcionRepository = inscripcionRepository;
     }
 
     @Transactional
@@ -34,6 +40,12 @@ public class PreguntaService {
 
         Sesion sesion = sesionRepository.findById(sesionId)
                 .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada."));
+
+        boolean inscrito = inscripcionRepository.findBySesionIdAndAlumnoIdAndEstado(sesionId, alumnoId, INSCRIPCION_CONFIRMADA)
+                .isPresent();
+        if (!inscrito) {
+            throw new IllegalArgumentException("Solo puedes publicar preguntas si ya estás inscrito formalmente en la sesión.");
+        }
 
         String nombreCompleto = alumnoNombre != null && !alumnoNombre.isBlank()
                 ? alumnoNombre.trim()
