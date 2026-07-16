@@ -140,6 +140,12 @@ public class InscripcionService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public boolean estaInscrito(UUID sesionId, UUID alumnoId) {
+        return inscripcionRepository.findBySesionIdAndAlumnoIdAndEstado(sesionId, alumnoId, INSCRIPCION_CONFIRMADA)
+            .isPresent();
+    }
+
     // =========================================================================
     // HU-16: Cancelar inscripción
     // =========================================================================

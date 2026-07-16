@@ -62,6 +62,16 @@ public class InscripcionController {
         return ResponseEntity.ok(inscripcionService.getAgendaAlumno(alumnoId));
     }
 
+    @GetMapping("/sesiones/{sesionId}/estado")
+    @PreAuthorize("hasRole('ROLE_ALUMNO')")
+    public ResponseEntity<Boolean> verificarInscripcion(
+            @PathVariable UUID sesionId,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        UUID alumnoId = UUID.fromString(jwt.getClaimAsString("usuario_id"));
+        return ResponseEntity.ok(inscripcionService.estaInscrito(sesionId, alumnoId));
+    }
+
     // -----------------------------------------------------------------------
     // HU-16: DELETE — Cancelar inscripción
     // -----------------------------------------------------------------------

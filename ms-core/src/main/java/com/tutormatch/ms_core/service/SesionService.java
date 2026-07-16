@@ -81,6 +81,12 @@ public class SesionService {
         return mapToResponseDto(sesionRepository.save(nueva));
     }
 
+    public SesionResponseDto obtenerSesion(UUID id) {
+        Sesion sesion = sesionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        return mapToResponseDto(sesion);
+    }
+
     // =========================================================================
     // HU-10: Agenda del Tutor — sesiones futuras ordenadas
     // =========================================================================
@@ -177,7 +183,6 @@ public class SesionService {
     // =========================================================================
     // HU-13: Catálogo público con filtros opcionales
     // =========================================================================
-
     /**
      * Retorna el catálogo de sesiones disponibles para el público.
      * Los parámetros son opcionales (null = sin filtro).
